@@ -97,7 +97,7 @@ void ssd1306_flush(ssd1306_t *dev) {
     }
 }
 
-/* --- Cœur 8x14 --- */
+
 
 void ssd1306_draw_heart(ssd1306_t *dev, int x, int y) {
     for (int row = 0; row < 14; row++) {
@@ -109,7 +109,7 @@ void ssd1306_draw_heart(ssd1306_t *dev, int x, int y) {
 }
 
 
-/* --- Police 5x7 minimale (glyphes standards, domaine public) --- */
+
 static const uint8_t *glyph(char c) {
     static const uint8_t SP[5] = {0x00,0x00,0x00,0x00,0x00};
     static const uint8_t D0[5] = {0x3E,0x51,0x49,0x45,0x3E};
