@@ -2,11 +2,10 @@
 #include <stdlib.h>
 #include "freertos/task.h"
 
-/* Variable globale simple pour changer le scénario "en direct" depuis l'UART (main.c) */
+
 volatile scenario_t g_scenario = SCEN_NORMAL;
 volatile int        g_running  = 1;
 
-/* Inchangé par rapport à la version Buildroot : C pur */
 static int rr_interval_ms(scenario_t s) {
     switch (s) {
         case SCEN_NORMAL:      return 800 + (rand() % 100);        /* ~70-75 bpm */
@@ -34,7 +33,7 @@ void cardiac_simulator_task(void *arg) {
         if (!g_running) break;
 
         beat_event_t ev = { .type = EVT_NATURAL_BEAT, .timestamp_ms = now_ms() };
-        xQueueSend(a->out_queue, &ev, 0); /* non-bloquant, comme eq_push() d'origine */
+        xQueueSend(a->out_queue, &ev, 0); 
     }
     vTaskDelete(NULL);
 }
