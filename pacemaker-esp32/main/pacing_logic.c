@@ -11,14 +11,6 @@
 #define PACE_PIN       GPIO_NUM_2   /* LED rouge : stimulation (PACED) */
 #define SENSE_LED_PIN  GPIO_NUM_4   /* LED verte : battement naturel détecté (SENSED) */
 
-/*
- * ALGORITHME VVI — INCHANGÉ par rapport à la version Buildroot.
- * Seule différence : deliver_pacing_pulse() pilote un vrai GPIO au lieu d'un printf.
- *
- * On maintient un "escape_deadline" = instant limite avant lequel un battement
- * naturel DOIT arriver, sinon le pacemaker stimule.
- */
-
 static uint64_t g_last_beat_ms = 0;
 
 static void update_bpm_display(int rr_ms) {
@@ -33,13 +25,11 @@ static void update_bpm_display(int rr_ms) {
 
 
 static void deliver_pacing_pulse(uint64_t t) {
-    /* Sur la cible réelle Buildroot : sysfs/libgpiod. Ici : GPIO ESP-IDF natif,
-     * piloté visuellement dans Wokwi via la LED câblée dans diagram.json. */
     gpio_set_level(PACE_PIN, 1);
     logger_event("PACED", t, (int)(t - g_last_beat_ms));
 
     oled_ecg_scroll_and_plot(10);       /* pic bas et large = stimulation artificielle */
-    buzzer_beep(1000, 80);          /* bip grave, plus long = "alerte" pacing */
+    buzzer_beep(1000, 80);         
     update_bpm_display((int)(t - g_last_beat_ms));
     vTaskDelay(pdMS_TO_TICKS(PULSE_WIDTH_MS));
     gpio_set_level(PACE_PIN, 0);
@@ -82,7 +72,7 @@ void pacing_logic_task(void *arg) {
             gpio_set_level(SENSE_LED_PIN, 1);
             logger_event("SENSED", t, (int)since_last);
             oled_ecg_scroll_and_plot(55);  /* pic haut et fin = battement naturel type QRS */
-            buzzer_beep(2500, 30);      /* bip aigu, bref = "bip" normal type moniteur */
+            buzzer_beep(2500, 30);     
 
             update_bpm_display((int)since_last);
             g_last_beat_ms   = t;
