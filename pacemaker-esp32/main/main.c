@@ -12,7 +12,7 @@
 #include "oled_ecg.h"
 
 
-/* Remplace clock_gettime(CLOCK_MONOTONIC, ...) de la version Linux */
+
 uint64_t now_ms(void) {
     return (uint64_t)(esp_timer_get_time() / 1000ULL);
 }
@@ -24,8 +24,8 @@ static void print_help(void) {
 
 void app_main(void) {
     logger_init();
-    oled_ecg_init();   /* initialise aussi le bus I2C partagé */
-    oled_bpm_init();   /* réutilise le même bus */
+    oled_ecg_init();   
+    oled_bpm_init();   
     buzzer_init();
 
     /* Remplace event_queue_t + mutex/cond var fait main par une queue FreeRTOS native */
@@ -44,8 +44,6 @@ void app_main(void) {
 
     print_help();
 
-    /* Remplace la boucle fgets() sur stdin : lecture caractère par caractère
-     * depuis l'UART, exactement pilotable depuis le moniteur série Wokwi. */
     while (1) {
         int ch = getchar();
         if (ch == EOF) {
